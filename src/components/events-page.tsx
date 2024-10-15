@@ -1,0 +1,125 @@
+'use client'
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { CalendarIcon, MapPinIcon, UsersIcon, PlusIcon, CheckCircle, XCircle } from "lucide-react"
+import { Progress } from "@/components/ui/progress"
+import { Badge } from "@/components/ui/badge"
+import { useNavigate } from "react-router-dom"
+
+const events = [
+  {
+    id: 1,
+    title: "Bayanihan Community Cleanup",
+    startDate: "2023-06-15",
+    endDate: "2023-06-16",
+    location: "Luneta Park, Manila",
+    volunteers: 12,
+    targetVolunteers: 20,
+    description: "Join us for a day of cleaning and beautifying our local park, promoting community spirit.",
+    image: "https://i0.wp.com/rotarycluboftimogqc.org/wp-content/uploads/2021/03/IMG_1321-b.jpg?resize=843%2C632&ssl=1",
+    positions: [
+      { title: "Team Leader", filled: true },
+      { title: "Gardener", filled: true },
+      { title: "Litter Picker", filled: false },
+      { title: "Recycling Sorter", filled: false },
+    ]
+  },
+  {
+    id: 2,
+    title: "Tulong sa Kapwa Food Distribution",
+    startDate: "2023-06-20",
+    endDate: "2023-06-20",
+    location: "Barangay Hall, Quezon City",
+    volunteers: 8,
+    targetVolunteers: 15,
+    description: "Help sort and distribute food packages to families in need in our community.",
+    image: "https://files01.pna.gov.ph/category-list/2020/05/18/distribution.jpg",
+    positions: [
+      { title: "Coordinator", filled: true },
+      { title: "Food Packer", filled: false },
+      { title: "Distributor", filled: false },
+    ]
+  },
+  {
+    id: 3,
+    title: "Tech Savvy Seniors Workshop",
+    startDate: "2023-06-25",
+    endDate: "2023-06-27",
+    location: "Senior Citizens Center, Makati",
+    volunteers: 5,
+    targetVolunteers: 10,
+    description: "Assist seniors with basic computer and smartphone skills to help them stay connected.",
+    image: "https://www.conservatoryseniorliving.com/wp-content/uploads/2022/01/how-to-become-a-tech-savvy-senior-1.jpg",
+    positions: [
+      { title: "Instructor", filled: true },
+      { title: "Tech Support", filled: false },
+      { title: "Assistant", filled: false },
+    ]
+  },
+];
+
+export default function EventsPageComponent() {
+  const navigate = useNavigate();
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <header className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Your Events</h1>
+        <Button onClick={() => navigate("/create-event")}>
+          <PlusIcon className="mr-2 h-4 w-4" /> Create Event
+        </Button>
+      </header>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {events.map((event) => (
+          <Card key={event.id} className="flex flex-col">
+            <img 
+              src={event.image} 
+              alt={event.title}
+              className="w-full h-48 object-cover"
+            />
+            <CardHeader>
+              <CardTitle>{event.title}</CardTitle>
+              <CardDescription>{event.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <div className="flex items-center mb-2">
+                <CalendarIcon className="mr-2 h-4 w-4 opacity-70" /> 
+                {event.startDate} - {event.endDate}
+              </div>
+              <div className="flex items-center mb-2">
+                <MapPinIcon className="mr-2 h-4 w-4 opacity-70" /> {event.location}
+              </div>
+              <div className="flex items-center mb-2">
+                <UsersIcon className="mr-2 h-4 w-4 opacity-70" /> 
+                {event.volunteers} / {event.targetVolunteers} volunteers
+              </div>
+              <Progress 
+                value={(event.volunteers / event.targetVolunteers) * 100} 
+                className="h-2 mb-4"
+              />
+              <div className="mt-4">
+                <h4 className="font-semibold mb-2">Positions Needed:</h4>
+                <div className="flex flex-wrap gap-2">
+                  {event.positions.map((position, index) => (
+                    <Badge key={index} variant={position.filled ? "secondary" : "outline"} className="flex items-center">
+                      {position.title}
+                      {position.filled ? 
+                        <CheckCircle className="ml-1 h-3 w-3 text-green-500" /> : 
+                        <XCircle className="ml-1 h-3 w-3 text-red-500" />
+                      }
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" className="w-full">
+                View Details
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
