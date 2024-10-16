@@ -1,21 +1,35 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Send } from "lucide-react"
+import { Send, Menu, X } from "lucide-react"
 
-const conversations = [
+interface Conversation {
+  id: number
+  name: string
+  lastMessage: string
+  avatar: string
+}
+
+interface Message {
+  id: number
+  sender: string
+  content: string
+  timestamp: string
+}
+
+const initialConversations: Conversation[] = [
   { id: 1, name: "Gawad Kalinga", lastMessage: "Thank you for your interest in volunteering!", avatar: "/placeholder.svg?height=32&width=32" },
   { id: 2, name: "Philippine Red Cross", lastMessage: "Can you join our blood donation drive?", avatar: "/placeholder.svg?height=32&width=32" },
   { id: 3, name: "Habitat for Humanity PH", lastMessage: "We appreciate your help last week!", avatar: "/placeholder.svg?height=32&width=32" },
   { id: 4, name: "UNICEF Philippines", lastMessage: "Our next outreach is on Saturday.", avatar: "/placeholder.svg?height=32&width=32" },
 ]
 
-const mockMessages = [
+const initialMessages: Message[] = [
   { id: 1, sender: "Gawad Kalinga", content: "Magandang araw! Thank you for your interest in volunteering with Gawad Kalinga.", timestamp: "10:00 AM" },
   { id: 2, sender: "You", content: "Magandang araw din po! I'm excited to help. What opportunities are available?", timestamp: "10:05 AM" },
   { id: 3, sender: "Gawad Kalinga", content: "We have several programs you can join. Our current focus is on building homes in Tondo, Manila.", timestamp: "10:10 AM" },
@@ -24,30 +38,83 @@ const mockMessages = [
 ]
 
 export function ChatUi() {
-  const [selectedConversation, setSelectedConversation] = useState(conversations[0])
-  const [messages, setMessages] = useState(mockMessages)
-  const [newMessage, setNewMessage] = useState("")
+  const [conversations, setConversations] = useState<Conversation[]>(initialConversations)
+  const [selectedConversation, setSelectedConversation] = useState<Conversation>(conversations[0])
+  const [messages, setMessages] = useState<Message[]>(initialMessages)
+  const [newMessage, setNewMessage] = useState<string>("")
+  const [isTyping, setIsTyping] = useState<boolean>(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    }
+  }, [messages])
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault()
     if (newMessage.trim()) {
-      setMessages([...messages, { id: messages.length + 1, sender: "You", content: newMessage, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }])
+      const newUserMessage: Message = { 
+        id: messages.length + 1, 
+        sender: "You", 
+        content: newMessage, 
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+      }
+      setMessages([...messages, newUserMessage])
       setNewMessage("")
+      simulateReply(newUserMessage)
+      updateConversation(newUserMessage)
     }
+  }
+
+  const simulateReply = (userMessage: Message) => {
+    setIsTyping(true)
+    setTimeout(() => {
+      const replyMessage: Message = { 
+        id: messages.length + 2, 
+        sender: selectedConversation.name, 
+        content: `Thank you for your message: "${userMessage.content}". We'll get back to you soon.`, 
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+      }
+      setMessages(prevMessages => [...prevMessages, replyMessage])
+      setIsTyping(false)
+      updateConversation(replyMessage)
+    }, 2000 + Math.random() * 2000)
+  }
+
+  const updateConversation = (message: Message) => {
+    setConversations(prevConversations =>
+      prevConversations.map(conv =>
+        conv.id === selectedConversation.id
+          ? { ...conv, lastMessage: message.content }
+          : conv
+      )
+    )
+  }
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
   }
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <div className="w-1/4 bg-white border-r border-gray-200">
-        <div className="p-4 border-b border-gray-200">
+      <div className={`bg-white border-r border-gray-200 w-full md:w-1/4 lg:w-1/5 absolute md:relative z-10 transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-xl font-semibold">Organizations</h2>
+          <Button variant="ghost" className="md:hidden" onClick={toggleSidebar}>
+            <X className="h-6 w-6" />
+          </Button>
         </div>
         <ScrollArea className="h-[calc(100vh-5rem)]">
           {conversations.map((conversation) => (
             <div
               key={conversation.id}
               className={`p-4 cursor-pointer hover:bg-gray-100 ${selectedConversation.id === conversation.id ? 'bg-gray-100' : ''}`}
-              onClick={() => setSelectedConversation(conversation)}
+              onClick={() => {
+                setSelectedConversation(conversation)
+                setIsSidebarOpen(false)
+              }}
             >
               <div className="flex items-center space-x-4">
                 <Avatar>
@@ -64,20 +131,29 @@ export function ChatUi() {
         </ScrollArea>
       </div>
 
-      <div className="flex-1 flex flex-col">
-        <div className="p-4 border-b border-gray-200 bg-white">
+      <div className="flex-1 flex flex-col w-full">
+        <div className="p-4 border-b border-gray-200 bg-white flex justify-between items-center">
+          <Button variant="ghost" className="md:hidden" onClick={toggleSidebar}>
+            <Menu className="h-6 w-6" />
+          </Button>
           <h2 className="text-xl font-semibold">{selectedConversation.name}</h2>
+          <div className="w-6 md:hidden"></div>
         </div>
 
-        <ScrollArea className="flex-1 p-4">
+        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
           {messages.map((message) => (
             <div key={message.id} className={`mb-4 ${message.sender === "You" ? "text-right" : ""}`}>
-              <Card className={`inline-block p-4 max-w-md ${message.sender === "You" ? "bg-blue-500 text-white" : "bg-white"}`}>
+              <Card className={`inline-block p-4 max-w-xs sm:max-w-sm md:max-w-md ${message.sender === "You" ? "bg-blue-500 text-white" : "bg-white"}`}>
                 <p>{message.content}</p>
                 <p className={`text-xs mt-1 ${message.sender === "You" ? "text-blue-100" : "text-gray-500"}`}>{message.timestamp}</p>
               </Card>
             </div>
           ))}
+          {isTyping && (
+            <div className="text-gray-500 text-sm">
+              {selectedConversation.name} is typing...
+            </div>
+          )}
         </ScrollArea>
 
         <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-gray-200">
@@ -89,7 +165,7 @@ export function ChatUi() {
               onChange={(e) => setNewMessage(e.target.value)}
               className="flex-1"
             />
-            <Button type="submit">
+            <Button type="submit" disabled={isTyping}>
               <Send className="h-4 w-4" />
               <span className="sr-only">Send</span>
             </Button>

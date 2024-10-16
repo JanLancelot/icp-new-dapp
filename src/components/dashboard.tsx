@@ -42,15 +42,9 @@ export default function Dashboard({ children }: DashboardProps) {
       icon: <Users className="h-5 w-5" />,
       items: [
         { name: "Event Dashboard", route: "/manage-org-home" },
-        { name: "View All Connections" },
+        { name: "View All Applications", route: "/view-applications"  },
         { name: "Connections & Page View Report" },
         { name: "Email Interested Volunteers" },
-        { name: "Media Manager" },
-        { name: "Greeting Manager" },
-        { name: "Document Manager" },
-        { name: "Question Manager" },
-        { name: "Promote Your Opportunities" },
-        { name: "Background Check" },
       ],
     },
     {
@@ -59,10 +53,8 @@ export default function Dashboard({ children }: DashboardProps) {
       items: [
         { name: "Organization Profile", route: "/org-profile" },
         { name: "Edit Organization Profile", route: "/edit-org-profile" },
-        { name: "Manage Administrators" },
-        { name: "Manage Contacts" },
-        { name: "Order History" },
-        { name: "Add a New Organization" },
+        { name: "Manage Org Members", route: "/manage-org-members" },
+        { name: "Add a New Organization", route: "/create-org-profile" },
       ],
     },
     {

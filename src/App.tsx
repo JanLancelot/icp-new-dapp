@@ -13,6 +13,8 @@ import CreateEvent from "./pages/CreateEvent";
 import OrgProfile from "./pages/OrgProfile";
 import EditOrgProfile from "./pages/EditOrgProfile";
 import Chat from "./pages/Chat";
+import ViewApplications from "./pages/ViewApplications";
+import OrgMembers from "./pages/OrgMembers";
 
 function App() {
   const router = createBrowserRouter([
@@ -71,6 +73,14 @@ function App() {
     {
       path: '/chat',
       element: <Chat />
+    },
+    {
+      path: '/view-applications',
+      element: <ViewApplications />
+    },
+    {
+      path: '/manage-org-members',
+      element: <OrgMembers />
     }
   ]);
   return (
