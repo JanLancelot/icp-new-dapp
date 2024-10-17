@@ -1,5 +1,6 @@
 'use client'
 
+import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { CalendarIcon, MapPinIcon, UsersIcon, PlusIcon, CheckCircle, XCircle } from "lucide-react"
@@ -7,7 +8,26 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { useNavigate } from "react-router-dom"
 
-const events = [
+interface Position {
+  title: string;
+  filled: boolean;
+}
+
+interface Event {
+  id: number;
+  title: string;
+  startDate: string;
+  endDate: string;
+  location: string;
+  volunteers: number;
+  targetVolunteers: number;
+  description: string;
+  image: string;
+  positions: Position[];
+  completed: boolean;
+}
+
+const initialEvents: Event[] = [
   {
     id: 1,
     title: "Bayanihan Community Cleanup",
@@ -23,7 +43,8 @@ const events = [
       { title: "Gardener", filled: true },
       { title: "Litter Picker", filled: false },
       { title: "Recycling Sorter", filled: false },
-    ]
+    ],
+    completed: false
   },
   {
     id: 2,
@@ -39,7 +60,8 @@ const events = [
       { title: "Coordinator", filled: true },
       { title: "Food Packer", filled: false },
       { title: "Distributor", filled: false },
-    ]
+    ],
+    completed: false
   },
   {
     id: 3,
@@ -55,12 +77,79 @@ const events = [
       { title: "Instructor", filled: true },
       { title: "Tech Support", filled: false },
       { title: "Assistant", filled: false },
-    ]
+    ],
+    completed: false
   },
 ];
 
 export default function EventsPageComponent() {
   const navigate = useNavigate();
+  const [events, setEvents] = useState<Event[]>(initialEvents);
+
+  const completeEvent = (id: number) => {
+    setEvents(events.map(event => 
+      event.id === id ? { ...event, completed: true } : event
+    ));
+  };
+
+  const activeEvents = events.filter(event => !event.completed);
+  const completedEvents = events.filter(event => event.completed);
+
+  const renderEvent = (event: Event) => (
+    <Card key={event.id} className="flex flex-col">
+      <img 
+        src={event.image} 
+        alt={event.title}
+        className="w-full h-48 object-cover"
+      />
+      <CardHeader>
+        <CardTitle>{event.title}</CardTitle>
+        <CardDescription>{event.description}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-grow">
+        <div className="flex items-center mb-2">
+          <CalendarIcon className="mr-2 h-4 w-4 opacity-70" /> 
+          {event.startDate} - {event.endDate}
+        </div>
+        <div className="flex items-center mb-2">
+          <MapPinIcon className="mr-2 h-4 w-4 opacity-70" /> {event.location}
+        </div>
+        <div className="flex items-center mb-2">
+          <UsersIcon className="mr-2 h-4 w-4 opacity-70" /> 
+          {event.volunteers} / {event.targetVolunteers} volunteers
+        </div>
+        <Progress 
+          value={(event.volunteers / event.targetVolunteers) * 100} 
+          className="h-2 mb-4"
+        />
+        <div className="mt-4">
+          <h4 className="font-semibold mb-2">Positions Needed:</h4>
+          <div className="flex flex-wrap gap-2">
+            {event.positions.map((position, index) => (
+              <Badge key={index} variant={position.filled ? "secondary" : "outline"} className="flex items-center">
+                {position.title}
+                {position.filled ? 
+                  <CheckCircle className="ml-1 h-3 w-3 text-green-500" /> : 
+                  <XCircle className="ml-1 h-3 w-3 text-red-500" />
+                }
+              </Badge>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Button variant="outline" onClick={() => navigate("/event")}>
+          View Details
+        </Button>
+        {!event.completed && (
+          <Button variant="secondary" onClick={() => completeEvent(event.id)}>
+            Complete Event
+          </Button>
+        )}
+      </CardFooter>
+    </Card>
+  );
+
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="flex justify-between items-center mb-8">
@@ -69,56 +158,15 @@ export default function EventsPageComponent() {
           <PlusIcon className="mr-2 h-4 w-4" /> Create Event
         </Button>
       </header>
+      
+      <h2 className="text-2xl font-semibold mb-4">Active Events</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {activeEvents.map(renderEvent)}
+      </div>
+      
+      <h2 className="text-2xl font-semibold mb-4">Completed Events</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.map((event) => (
-          <Card key={event.id} className="flex flex-col">
-            <img 
-              src={event.image} 
-              alt={event.title}
-              className="w-full h-48 object-cover"
-            />
-            <CardHeader>
-              <CardTitle>{event.title}</CardTitle>
-              <CardDescription>{event.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <div className="flex items-center mb-2">
-                <CalendarIcon className="mr-2 h-4 w-4 opacity-70" /> 
-                {event.startDate} - {event.endDate}
-              </div>
-              <div className="flex items-center mb-2">
-                <MapPinIcon className="mr-2 h-4 w-4 opacity-70" /> {event.location}
-              </div>
-              <div className="flex items-center mb-2">
-                <UsersIcon className="mr-2 h-4 w-4 opacity-70" /> 
-                {event.volunteers} / {event.targetVolunteers} volunteers
-              </div>
-              <Progress 
-                value={(event.volunteers / event.targetVolunteers) * 100} 
-                className="h-2 mb-4"
-              />
-              <div className="mt-4">
-                <h4 className="font-semibold mb-2">Positions Needed:</h4>
-                <div className="flex flex-wrap gap-2">
-                  {event.positions.map((position, index) => (
-                    <Badge key={index} variant={position.filled ? "secondary" : "outline"} className="flex items-center">
-                      {position.title}
-                      {position.filled ? 
-                        <CheckCircle className="ml-1 h-3 w-3 text-green-500" /> : 
-                        <XCircle className="ml-1 h-3 w-3 text-red-500" />
-                      }
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button variant="outline" className="w-full">
-                View Details
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+        {completedEvents.map(renderEvent)}
       </div>
     </div>
   )

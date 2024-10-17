@@ -15,6 +15,10 @@ import EditOrgProfile from "./pages/EditOrgProfile";
 import Chat from "./pages/Chat";
 import ViewApplications from "./pages/ViewApplications";
 import OrgMembers from "./pages/OrgMembers";
+import EventStatistics from "./pages/EventStatistics";
+import OrgChat from "./pages/OrgChat";
+import BetterOppurtunities from "./pages/BetterOppurtunities";
+import Event from "./pages/Event";
 
 function App() {
   const router = createBrowserRouter([
@@ -81,6 +85,22 @@ function App() {
     {
       path: '/manage-org-members',
       element: <OrgMembers />
+    },
+    {
+      path: '/event-statistics',
+      element: <EventStatistics />
+    },
+    {
+      path: '/organization-chat',
+      element: <OrgChat />
+    },
+    {
+      path: '/better-opportunities',
+      element: <BetterOppurtunities />
+    },
+    {
+      path: '/event',
+      element: <Event />
     }
   ]);
   return (

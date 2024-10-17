@@ -26,6 +26,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 interface User {
   name: string;
@@ -82,6 +85,13 @@ const mockAchievements: Achievement[] = [
     type: "medal",
   },
 ];
+
+const customIcon = new L.Icon({
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/9356/9356230.png",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
 
 const mockUser: User = {
   name: "Jane Doe",
@@ -295,14 +305,26 @@ export default function VolunteerDashboard() {
                 </div>
               </div>
               <div className="flex-shrink-0 w-full md:w-48 h-48 bg-gray-200 rounded-lg overflow-hidden">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  frameBorder="0"
-                  style={{ border: 0 }}
-                  src={`https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=${user.coordinates.lat},${user.coordinates.lng}`}
-                  allowFullScreen
-                ></iframe>
+                <MapContainer
+                  center={[user.coordinates.lat, user.coordinates.lng]}
+                  zoom={13}
+                  style={{ height: "100%", width: "100%" }}
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
+                  <Marker
+                    position={[user.coordinates.lat, user.coordinates.lng]}
+                    icon={customIcon}
+                  >
+                    <Popup>
+                      {user.name}
+                      <br />
+                      {user.location}
+                    </Popup>
+                  </Marker>
+                </MapContainer>
               </div>
             </div>
             <div className="mt-4 text-center">

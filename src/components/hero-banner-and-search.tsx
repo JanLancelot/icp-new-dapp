@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,12 +16,14 @@ import {
   MapPin,
   Briefcase,
   Calendar,
-  User,
-  Users,
-  Clock,
-  Home,
-  School,
-  Shield,
+  ChevronLeft, 
+  ChevronRight
+  // User,
+  // Users,
+  // Clock,
+  // Home,
+  // School,
+  // Shield,
 } from "lucide-react";
 import {
   Dialog,
@@ -32,32 +36,32 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
-interface ContactInfo {
-  name: string;
-  email: string;
-  phone: string;
-}
+// interface ContactInfo {
+//   name: string;
+//   email: string;
+//   phone: string;
+// }
 
-interface Opportunity {
-  image: string;
-  title: string;
-  organization: string;
-  location: string;
-  position: string;
-  dateRange: string;
-  description: string;
-  address: string;
-  type: string;
-  primaryContact: ContactInfo;
-  secondaryContact?: ContactInfo;
-  categories: string[];
-  requiredDays: string[];
-  lodgingAvailable: boolean;
-  trainingRequired: boolean;
-  backgroundCheckRequired: boolean;
-  referenceCheckRequired: boolean;
-  applyLink: string;
-}
+// interface Opportunity {
+//   image: string;
+//   title: string;
+//   organization: string;
+//   location: string;
+//   position: string;
+//   dateRange: string;
+//   description: string;
+//   address: string;
+//   type: string;
+//   primaryContact: ContactInfo;
+//   secondaryContact?: ContactInfo;
+//   categories: string[];
+//   requiredDays: string[];
+//   lodgingAvailable: boolean;
+//   trainingRequired: boolean;
+//   backgroundCheckRequired: boolean;
+//   referenceCheckRequired: boolean;
+//   applyLink: string;
+// }
 
 interface ProgressBarProps {
   current: number;
@@ -103,23 +107,35 @@ const organizationsData: Organization[] = [
   },
 ];
 
-const OrganizationCard: React.FC<{ organization: Organization }> = ({ organization }) => {
+const OrganizationCard: React.FC<{ organization: Organization }> = ({
+  organization,
+}) => {
   return (
     <Card className="h-full flex flex-col">
       <CardContent className="p-6 flex-grow">
         <div className="flex flex-col h-full">
           <div className="flex items-start space-x-4 mb-4">
-            <img src={organization.logo} alt={organization.name} className="w-16 h-16 rounded-full" />
+            <img
+              src={organization.logo}
+              alt={organization.name}
+              className="w-16 h-16 rounded-full"
+            />
             <div className="flex-1">
-              <h3 className="text-xl font-semibold mb-2">{organization.name}</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                {organization.name}
+              </h3>
               <div className="flex flex-wrap gap-2 mb-2">
                 {organization.causeAreas.map((area, index) => (
-                  <Badge key={index} variant="secondary">{area}</Badge>
+                  <Badge key={index} variant="secondary">
+                    {area}
+                  </Badge>
                 ))}
               </div>
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-4 flex-grow">{organization.description}</p>
+          <p className="text-sm text-gray-600 mb-4 flex-grow">
+            {organization.description}
+          </p>
           <div className="flex items-center text-sm text-gray-500">
             <MapPin className="w-4 h-4 mr-1" />
             {organization.location}
@@ -127,7 +143,9 @@ const OrganizationCard: React.FC<{ organization: Organization }> = ({ organizati
         </div>
       </CardContent>
       <CardFooter className="bg-gray-50 border-t p-4">
-        <Button variant="outline" className="w-full">View Details</Button>
+        <Button variant="outline" className="w-full">
+          View Details
+        </Button>
       </CardFooter>
     </Card>
   );
@@ -151,143 +169,149 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ current, total }) => {
   );
 };
 
-const OpportunityDetails: React.FC<{ opportunity: Opportunity }> = ({
-  opportunity,
-}) => {
-  return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
-      <div className="relative h-64 rounded-t-lg overflow-hidden mb-6">
-        <img
-          src={opportunity.image}
-          alt={opportunity.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-4xl font-bold text-white text-center">
-            {opportunity.title}
-          </h1>
-        </div>
-      </div>
+// const OpportunityDetails: React.FC<{ opportunity: Opportunity }> = ({
+//   opportunity,
+// }) => {
+//   return (
+//     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
+//       <div className="relative h-64 rounded-t-lg overflow-hidden mb-6">
+//         <img
+//           src={opportunity.image}
+//           alt={opportunity.title}
+//           className="w-full h-full object-cover"
+//         />
+//         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+//           <h1 className="text-4xl font-bold text-white text-center">
+//             {opportunity.title}
+//           </h1>
+//         </div>
+//       </div>
 
-      <div className="mb-6">
-        <h2 className="text-2xl font-semibold mb-2">Description</h2>
-        <p className="text-gray-600">{opportunity.description}</p>
-      </div>
+//       <div className="mb-6">
+//         <h2 className="text-2xl font-semibold mb-2">Description</h2>
+//         <p className="text-gray-600">{opportunity.description}</p>
+//       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h3 className="text-xl font-semibold mb-4">Position Details</h3>
-          <ul className="space-y-4">
-            <li className="flex items-start">
-              <MapPin className="w-5 h-5 mr-2 text-blue-500 flex-shrink-0 mt-1" />
-              <div>
-                <p className="font-semibold">Address</p>
-                <p>{opportunity.address}</p>
-              </div>
-            </li>
-            <li className="flex items-center">
-              <Briefcase className="w-5 h-5 mr-2 text-blue-500" />
-              <div>
-                <p className="font-semibold">Type</p>
-                <p>{opportunity.type}</p>
-              </div>
-            </li>
-            <li className="flex items-center">
-              <Calendar className="w-5 h-5 mr-2 text-blue-500" />
-              <div>
-                <p className="font-semibold">Dates</p>
-                <p>{opportunity.dateRange}</p>
-              </div>
-            </li>
-            <li className="flex items-start">
-              <User className="w-5 h-5 mr-2 text-blue-500 flex-shrink-0 mt-1" />
-              <div>
-                <p className="font-semibold">Point of Contact</p>
-                <p>{opportunity.primaryContact.name}</p>
-                <p>{opportunity.primaryContact.email}</p>
-                <p>{opportunity.primaryContact.phone}</p>
-              </div>
-            </li>
-            {opportunity.secondaryContact && (
-              <li className="flex items-start">
-                <Users className="w-5 h-5 mr-2 text-blue-500 flex-shrink-0 mt-1" />
-                <div>
-                  <p className="font-semibold">Secondary Point of Contact</p>
-                  <p>{opportunity.secondaryContact.name}</p>
-                  <p>{opportunity.secondaryContact.email}</p>
-                  <p>{opportunity.secondaryContact.phone}</p>
-                </div>
-              </li>
-            )}
-          </ul>
-        </div>
-        <div>
-          <h3 className="text-xl font-semibold mb-4">Additional Information</h3>
-          <ul className="space-y-4">
-            <li className="flex items-center">
-              <School className="w-5 h-5 mr-2 text-blue-500" />
-              <div>
-                <p className="font-semibold">Category</p>
-                {opportunity.categories.map((category, index) => (
-                  <p key={index}>{category}</p>
-                ))}
-              </div>
-            </li>
-            <li className="flex items-center">
-              <Clock className="w-5 h-5 mr-2 text-blue-500" />
-              <div>
-                <p className="font-semibold">Required Days</p>
-                <p>{opportunity.requiredDays.join(", ")}</p>
-              </div>
-            </li>
-            <li className="flex items-center">
-              <Home className="w-5 h-5 mr-2 text-blue-500" />
-              <div>
-                <p className="font-semibold">
-                  Lodging Available for Opportunity
-                </p>
-                <p>{opportunity.lodgingAvailable ? "Yes" : "No"}</p>
-              </div>
-            </li>
-            <li className="flex items-center">
-              <Shield className="w-5 h-5 mr-2 text-blue-500" />
-              <div>
-                <p className="font-semibold">Training Required</p>
-                <p>{opportunity.trainingRequired ? "Yes" : "No"}</p>
-              </div>
-            </li>
-            <li className="flex items-center">
-              <Shield className="w-5 h-5 mr-2 text-blue-500" />
-              <div>
-                <p className="font-semibold">Background Check Required</p>
-                <p>{opportunity.backgroundCheckRequired ? "Yes" : "No"}</p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div className="mt-6 text-center">
-        <Button
-          variant="default"
-          size="lg"
-          onClick={() => window.open(opportunity.applyLink, "_blank")}
-        >
-          Apply Now
-        </Button>
-      </div>
-    </div>
-  );
-};
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//         <div>
+//           <h3 className="text-xl font-semibold mb-4">Position Details</h3>
+//           <ul className="space-y-4">
+//             <li className="flex items-start">
+//               <MapPin className="w-5 h-5 mr-2 text-blue-500 flex-shrink-0 mt-1" />
+//               <div>
+//                 <p className="font-semibold">Address</p>
+//                 <p>{opportunity.address}</p>
+//               </div>
+//             </li>
+//             <li className="flex items-center">
+//               <Briefcase className="w-5 h-5 mr-2 text-blue-500" />
+//               <div>
+//                 <p className="font-semibold">Type</p>
+//                 <p>{opportunity.type}</p>
+//               </div>
+//             </li>
+//             <li className="flex items-center">
+//               <Calendar className="w-5 h-5 mr-2 text-blue-500" />
+//               <div>
+//                 <p className="font-semibold">Dates</p>
+//                 <p>{opportunity.dateRange}</p>
+//               </div>
+//             </li>
+//             <li className="flex items-start">
+//               <User className="w-5 h-5 mr-2 text-blue-500 flex-shrink-0 mt-1" />
+//               <div>
+//                 <p className="font-semibold">Point of Contact</p>
+//                 <p>{opportunity.primaryContact.name}</p>
+//                 <p>{opportunity.primaryContact.email}</p>
+//                 <p>{opportunity.primaryContact.phone}</p>
+//               </div>
+//             </li>
+//             {opportunity.secondaryContact && (
+//               <li className="flex items-start">
+//                 <Users className="w-5 h-5 mr-2 text-blue-500 flex-shrink-0 mt-1" />
+//                 <div>
+//                   <p className="font-semibold">Secondary Point of Contact</p>
+//                   <p>{opportunity.secondaryContact.name}</p>
+//                   <p>{opportunity.secondaryContact.email}</p>
+//                   <p>{opportunity.secondaryContact.phone}</p>
+//                 </div>
+//               </li>
+//             )}
+//           </ul>
+//         </div>
+//         <div>
+//           <h3 className="text-xl font-semibold mb-4">Additional Information</h3>
+//           <ul className="space-y-4">
+//             <li className="flex items-center">
+//               <School className="w-5 h-5 mr-2 text-blue-500" />
+//               <div>
+//                 <p className="font-semibold">Category</p>
+//                 {opportunity.categories.map((category, index) => (
+//                   <p key={index}>{category}</p>
+//                 ))}
+//               </div>
+//             </li>
+//             <li className="flex items-center">
+//               <Clock className="w-5 h-5 mr-2 text-blue-500" />
+//               <div>
+//                 <p className="font-semibold">Required Days</p>
+//                 <p>{opportunity.requiredDays.join(", ")}</p>
+//               </div>
+//             </li>
+//             <li className="flex items-center">
+//               <Home className="w-5 h-5 mr-2 text-blue-500" />
+//               <div>
+//                 <p className="font-semibold">
+//                   Lodging Available for Opportunity
+//                 </p>
+//                 <p>{opportunity.lodgingAvailable ? "Yes" : "No"}</p>
+//               </div>
+//             </li>
+//             <li className="flex items-center">
+//               <Shield className="w-5 h-5 mr-2 text-blue-500" />
+//               <div>
+//                 <p className="font-semibold">Training Required</p>
+//                 <p>{opportunity.trainingRequired ? "Yes" : "No"}</p>
+//               </div>
+//             </li>
+//             <li className="flex items-center">
+//               <Shield className="w-5 h-5 mr-2 text-blue-500" />
+//               <div>
+//                 <p className="font-semibold">Background Check Required</p>
+//                 <p>{opportunity.backgroundCheckRequired ? "Yes" : "No"}</p>
+//               </div>
+//             </li>
+//           </ul>
+//         </div>
+//       </div>
+//       <div className="mt-6 text-center">
+//         <Button
+//           variant="default"
+//           size="lg"
+//           onClick={() => window.open(opportunity.applyLink, "_blank")}
+//         >
+//           Apply Now
+//         </Button>
+//       </div>
+//     </div>
+//   );
+// };
 
 const OrganizationSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [location, setLocation] = useState("");
   const [causeArea, setCauseArea] = useState("all");
 
-  const filteredOrganizations = organizationsData.filter(org => 
-    (org.name.toLowerCase().includes(searchTerm.toLowerCase()) || searchTerm === "") &&
-    (org.location.toLowerCase().includes(location.toLowerCase()) || location === "") &&
-    (causeArea === "all" || org.causeAreas.some(area => area.toLowerCase().includes(causeArea.toLowerCase())))
+  const filteredOrganizations = organizationsData.filter(
+    (org) =>
+      (org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        searchTerm === "") &&
+      (org.location.toLowerCase().includes(location.toLowerCase()) ||
+        location === "") &&
+      (causeArea === "all" ||
+        org.causeAreas.some((area) =>
+          area.toLowerCase().includes(causeArea.toLowerCase())
+        ))
   );
 
   return (
@@ -309,31 +333,40 @@ const OrganizationSearch = () => {
         <div className="max-w-3xl mx-auto mb-8">
           <div className="space-y-6">
             <div>
-              <label htmlFor="org-search" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="org-search"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Search Organizations
               </label>
-              <Input 
-                type="text" 
-                id="org-search" 
-                placeholder="Enter organization name..." 
+              <Input
+                type="text"
+                id="org-search"
+                placeholder="Enter organization name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div>
-              <label htmlFor="org-location" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="org-location"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Location
               </label>
-              <Input 
-                type="text" 
-                id="org-location" 
-                placeholder="Enter city, state, or zip code..." 
+              <Input
+                type="text"
+                id="org-location"
+                placeholder="Enter city, state, or zip code..."
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
               />
             </div>
             <div>
-              <label htmlFor="org-cause" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="org-cause"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Cause Area
               </label>
               <Select value={causeArea} onValueChange={setCauseArea}>
@@ -354,13 +387,15 @@ const OrganizationSearch = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredOrganizations.map(org => (
+          {filteredOrganizations.map((org) => (
             <OrganizationCard key={org.id} organization={org} />
           ))}
         </div>
 
         {filteredOrganizations.length === 0 && (
-          <p className="text-center text-gray-500 mt-8">No organizations found matching your criteria.</p>
+          <p className="text-center text-gray-500 mt-8">
+            No organizations found matching your criteria.
+          </p>
         )}
       </div>
     </div>
@@ -371,6 +406,12 @@ const DiscoverOpportunities = () => {
   const [category, setCategory] = useState("");
   const [specialGroup, setSpecialGroup] = useState("");
   const [agency, setAgency] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+
+  const navigate = useNavigate();
+
   const opportunities = [
     {
       image:
@@ -508,6 +549,41 @@ const DiscoverOpportunities = () => {
       totalVolunteersNeeded: 10,
     },
   ];
+
+  const totalPages = Math.ceil(opportunities.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentOpportunities = opportunities.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber: number): void => setCurrentPage(pageNumber);
+
+  const renderPagination = () => (
+    <div className="flex justify-center items-center mt-6 space-x-2">
+      <Button
+        variant="outline"
+        onClick={() => paginate(currentPage - 1)}
+        disabled={currentPage === 1}
+      >
+        <ChevronLeft className="w-4 h-4" />
+      </Button>
+      {[...Array(totalPages)].map((_, index) => (
+        <Button
+          key={index}
+          variant={currentPage === index + 1 ? "default" : "outline"}
+          onClick={() => paginate(index + 1)}
+        >
+          {index + 1}
+        </Button>
+      ))}
+      <Button
+        variant="outline"
+        onClick={() => paginate(currentPage + 1)}
+        disabled={currentPage === totalPages}
+      >
+        <ChevronRight className="w-4 h-4" />
+      </Button>
+    </div>
+  );
 
   const renderModal = (
     title: string,
@@ -734,14 +810,11 @@ const DiscoverOpportunities = () => {
           </div>
 
           <div className="w-full md:w-2/3">
-            <h2 className="text-2xl font-bold mb-4">
-              5 of 625 Opportunities{" "}
-              <span className="text-blue-600 text-sm font-normal">
-                (Load More)
-              </span>
+          <h2 className="text-2xl font-bold mb-4">
+              {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, opportunities.length)} of {opportunities.length} Opportunities
             </h2>
             <div className="space-y-6">
-              {opportunities.map((opportunity, index) => (
+              {currentOpportunities.map((opportunity, index) => (
                 <Card key={index}>
                   <CardContent className="p-6">
                     <div className="flex flex-col md:flex-row gap-6">
@@ -785,18 +858,23 @@ const DiscoverOpportunities = () => {
                   <CardFooter className="bg-gray-50 border-t p-4">
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button variant="outline" className="w-full">
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => navigate("/event")}
+                        >
                           More info
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-4xl">
+                      {/* <DialogContent className="max-w-4xl">
                         <OpportunityDetails opportunity={opportunity} />
-                      </DialogContent>
+                      </DialogContent> */}
                     </Dialog>
                   </CardFooter>
                 </Card>
               ))}
             </div>
+            {renderPagination()}
           </div>
         </div>
       </div>

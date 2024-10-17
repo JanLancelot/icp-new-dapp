@@ -43,8 +43,8 @@ export default function Dashboard({ children }: DashboardProps) {
       items: [
         { name: "Event Dashboard", route: "/manage-org-home" },
         { name: "View All Applications", route: "/view-applications"  },
-        { name: "Connections & Page View Report" },
-        { name: "Email Interested Volunteers" },
+        { name: "Connections & Page View Report", route:"/event-statistics" },
+        { name: "Chat With Volunteers", route:"/organization-chat" },
       ],
     },
     {
@@ -61,11 +61,8 @@ export default function Dashboard({ children }: DashboardProps) {
       title: "Resources and Help",
       icon: <HelpCircle className="h-5 w-5" />,
       items: [
-        { name: "Help Center" },
-        { name: "Learning Center" },
-        { name: "Nonprofit Webinars" },
-        { name: "Tips to Create Better Opportunities" },
-        { name: "Discover More Pro Resources" },
+        { name: "Help Center", route: "/help-center" },
+        { name: "Tips to Create Better Opportunities", route: "/better-opportunities" },
       ],
     },
   ];
@@ -91,7 +88,7 @@ export default function Dashboard({ children }: DashboardProps) {
         } md:relative md:translate-x-0 transition duration-200 ease-in-out md:flex flex-col w-64 bg-white shadow-lg z-30`}
       >
         <div className="flex justify-between items-center p-4 bg-primary text-primary-foreground">
-          <h2 className="text-lg font-semibold">Volunteer Dashboard</h2>
+          <h2 className="text-lg font-semibold">Organization Dashboard</h2>
           <Button
             variant="ghost"
             size="icon"
@@ -101,6 +98,17 @@ export default function Dashboard({ children }: DashboardProps) {
             <X className="h-6 w-6" />
           </Button>
         </div>
+        
+        <div className="p-4">
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => handleNavigation("/")}
+          >
+            Back to Main Page
+          </Button>
+        </div>
+
         <nav className="flex-1 overflow-y-auto py-4">
           {menuItems.map((item, index) => (
             <Collapsible key={index}>
