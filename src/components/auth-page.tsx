@@ -61,19 +61,39 @@ export function AuthPageComponent(): JSX.Element {
   };
 
   const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>,
-    formType: string
-  ) => {
-    e.preventDefault();
-    setIsLoading(true);
+  e: React.FormEvent<HTMLFormElement>,
+  formType: string
+) => {
+  e.preventDefault();
+  setIsLoading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+  try {
+    const response = await fetch(`/api/auth/${formType}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
 
-    console.log(`${formType} form submitted:`, formData);
-    setIsLoading(false);
+    const data = await response.json();
+    if (response.ok) {
+      console.log(`${formType} successful`, data);
+      // Save token to local storage if login is successful
+      if (formType === 'signin') {
+        localStorage.setItem('token', data.token);
+      }
+    } else {
+      console.error(data.error);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
 
-    setFormData({ email: "", password: "", name: "" });
-  };
+  setIsLoading(false);
+  setFormData({ email: '', password: '', name: '' });
+};
+
 
   return (
     <div className="flex h-screen">
