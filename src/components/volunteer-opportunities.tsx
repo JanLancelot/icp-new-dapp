@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import { Calendar, Globe, Lightbulb, Laptop, Tent, Leaf } from 'lucide-react'
 
 export function VolunteerOpportunitiesComponent() {
