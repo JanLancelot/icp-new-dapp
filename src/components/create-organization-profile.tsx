@@ -51,7 +51,6 @@ import {
   User,
 } from "lucide-react";
 
-
 export function CreateOrganizationProfile() {
   const [selectedCauses, setSelectedCauses] = useState<string[]>([]);
 
@@ -196,6 +195,34 @@ export function CreateOrganizationProfile() {
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone *</Label>
                   <Input id="phone" placeholder="Enter your phone number" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="org-category">Organization Category *</Label>
+                  <Select>
+                    <SelectTrigger id="org-category">
+                      <SelectValue placeholder="Select your organization category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="501c-nonprofits">
+                        501(c) Nonprofits
+                      </SelectItem>
+                      <SelectItem value="govt-hospice-state">
+                        Gov't, Hospice, State-Level
+                      </SelectItem>
+                      <SelectItem value="schools">Schools</SelectItem>
+                      <SelectItem value="ngo">NGO</SelectItem>
+                      <SelectItem value="foundation">Foundation</SelectItem>
+                      <SelectItem value="religious">
+                        Religious Organization
+                      </SelectItem>
+                      <SelectItem value="community-org">
+                        Community Organization
+                      </SelectItem>
+                      <SelectItem value="social-enterprise">
+                        Social Enterprise
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="flex items-center space-x-2">

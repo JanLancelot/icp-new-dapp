@@ -19,6 +19,7 @@ import EventStatistics from "./pages/EventStatistics";
 import OrgChat from "./pages/OrgChat";
 import BetterOppurtunities from "./pages/BetterOppurtunities";
 import Event from "./pages/Event";
+import ApproveRejectApplicationForm from "./pages/ApproveRejectApplicationForm";
 
 function App() {
   const router = createBrowserRouter([
@@ -43,9 +44,9 @@ function App() {
       element: <Help />
     },
     {
-      path: "/profile",
+      path: "/profile/:userId?",
       element: <Profile />
-    },
+    },    
     {
       path: "/organization-welcome",
       element: <Organization />
@@ -101,6 +102,10 @@ function App() {
     {
       path: '/event',
       element: <Event />
+    },
+    {
+      path: '/approve-application',
+      element: <ApproveRejectApplicationForm />
     }
   ]);
   return (

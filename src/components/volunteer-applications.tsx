@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
 type Application = {
   id: string;
   volunteerName: string;
@@ -54,6 +55,7 @@ export default function VolunteerApplications() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+  const navigate = useNavigate();
 
   const filteredApplications = useMemo(() => {
     return applications.filter((app) => {
@@ -132,7 +134,7 @@ export default function VolunteerApplications() {
               <TableCell>{application.contact}</TableCell>
               <TableCell>{application.comments}</TableCell>
               <TableCell>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={() => navigate('/approve-application')}>
                   Details
                 </Button>
               </TableCell>

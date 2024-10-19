@@ -60,21 +60,6 @@ export function VolunteerApplicationFormComponent({
     "Writing/Editing",
   ];
 
-  // const languages = [
-  //   "Arabic",
-  //   "Chinese",
-  //   "English",
-  //   "French",
-  //   "German",
-  //   "Hindi",
-  //   "Japanese",
-  //   "Korean",
-  //   "Lahanda/Punjabi",
-  //   "Portuguese",
-  //   "Russian",
-  //   "Spanish",
-  // ];
-
   const languages = [
     "Filipino",
     "English",

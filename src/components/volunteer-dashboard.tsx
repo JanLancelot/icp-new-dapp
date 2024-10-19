@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronDown, Info, Search, MapPin, Edit2, Award } from "lucide-react";
+import { ChevronDown, Info, Search, MapPin, Edit2, Award, Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,13 +32,13 @@ import "leaflet/dist/leaflet.css";
 
 interface User {
   name: string;
+  email: string;
   profilePicture: string;
   causes: string[];
   skills: string[];
   location: string;
   coordinates: { lat: number; lng: number };
 }
-
 interface Opportunity {
   applicationNumber: string;
   link: string;
@@ -95,6 +95,7 @@ const customIcon = new L.Icon({
 
 const mockUser: User = {
   name: "Jane Doe",
+  email: "jane.doe@example.com",
   profilePicture: "",
   causes: ["Environment", "Education", "Animal Welfare"],
   skills: ["Project Management", "Teaching", "Gardening"],
@@ -279,6 +280,10 @@ export default function VolunteerDashboard() {
 
               <div className="flex-grow text-center md:text-left">
                 <h2 className="text-2xl font-bold mb-2">{user.name}</h2>
+                <div className="flex items-center justify-center md:justify-start mb-2">
+                  <Mail className="mr-2 text-gray-500" />
+                  <span>{user.email}</span>
+                </div>
                 <div className="flex items-center justify-center md:justify-start mb-4">
                   <MapPin className="mr-2 text-gray-500" />
                   <span>{user.location}</span>
@@ -520,6 +525,16 @@ function EditProfileDialog({ user, onUpdate }: EditProfileDialogProps) {
               id="name"
               name="name"
               value={editedUser.name}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              value={editedUser.email}
               onChange={handleInputChange}
             />
           </div>

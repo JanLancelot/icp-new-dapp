@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,8 +16,8 @@ import {
   MapPin,
   Briefcase,
   Calendar,
-  ChevronLeft, 
-  ChevronRight
+  ChevronLeft,
+  ChevronRight,
   // User,
   // Users,
   // Clock,
@@ -25,16 +25,10 @@ import {
   // School,
   // Shield,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Search, Tag } from "lucide-react";
 
 // interface ContactInfo {
 //   name: string;
@@ -317,60 +311,52 @@ const OrganizationSearch = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <div
-        className="relative h-80 bg-cover bg-center flex items-center justify-center"
+        className="relative h-96 bg-cover bg-center flex items-center justify-center"
         style={{
           backgroundImage:
             "url('https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')",
         }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-        <h1 className="relative z-10 text-4xl md:text-6xl font-bold text-white text-center drop-shadow-2xl">
-          Search Organizations
+        <h1 className="relative z-10 text-5xl md:text-7xl font-bold text-white text-center drop-shadow-2xl">
+          Discover Organizations
         </h1>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto mb-8">
+      <div className="container mx-auto px-4 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="max-w-4xl mx-auto mb-12 bg-white rounded-lg shadow-lg p-8"
+        >
           <div className="space-y-6">
-            <div>
-              <label
-                htmlFor="org-search"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Search Organizations
-              </label>
+            <div className="relative">
+              <Search className="absolute top-3 left-3 text-gray-400" />
               <Input
                 type="text"
                 id="org-search"
-                placeholder="Enter organization name..."
+                placeholder="Search organizations..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            <div>
-              <label
-                htmlFor="org-location"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Location
-              </label>
+            <div className="relative">
+              <MapPin className="absolute top-3 left-3 text-gray-400" />
               <Input
                 type="text"
                 id="org-location"
-                placeholder="Enter city, state, or zip code..."
+                placeholder="Enter location..."
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            <div>
-              <label
-                htmlFor="org-cause"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Cause Area
-              </label>
+            <div className="relative">
+              <Tag className="absolute top-3 left-3 text-gray-400" />
               <Select value={causeArea} onValueChange={setCauseArea}>
-                <SelectTrigger>
+                <SelectTrigger className="pl-10 pr-4 py-2 w-full border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                   <SelectValue placeholder="Select a cause area" />
                 </SelectTrigger>
                 <SelectContent>
@@ -384,18 +370,35 @@ const OrganizationSearch = () => {
               </Select>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredOrganizations.map((org) => (
-            <OrganizationCard key={org.id} organization={org} />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {filteredOrganizations.map((org, index) => (
+            <motion.div
+              key={org.id}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <OrganizationCard organization={org} />
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {filteredOrganizations.length === 0 && (
-          <p className="text-center text-gray-500 mt-8">
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-center text-gray-500 mt-12 text-lg"
+          >
             No organizations found matching your criteria.
-          </p>
+          </motion.p>
         )}
       </div>
     </div>
@@ -403,12 +406,16 @@ const OrganizationSearch = () => {
 };
 
 const DiscoverOpportunities = () => {
-  const [category, setCategory] = useState("");
-  const [specialGroup, setSpecialGroup] = useState("");
-  const [agency, setAgency] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [category, setCategory] = useState("all");
+  const [positionType, setPositionType] = useState("all");
+  const [lodging, setLodging] = useState("all");
+  const [organization, setOrganization] = useState("all");
+  const [location, setLocation] = useState("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-
 
   const navigate = useNavigate();
 
@@ -550,12 +557,89 @@ const DiscoverOpportunities = () => {
     },
   ];
 
-  const totalPages = Math.ceil(opportunities.length / itemsPerPage);
+  const [filteredOpportunities, setFilteredOpportunities] =
+    useState(opportunities);
+
+  useEffect(() => {
+    const filtered = opportunities.filter((opportunity) => {
+      const matchesSearch =
+        opportunity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        opportunity.organization
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        opportunity.description
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      const matchesCategory =
+        category === "all" || opportunity.categories.includes(category);
+      const matchesPositionType =
+        positionType === "all" || opportunity.type === positionType;
+      const matchesLodging =
+        lodging === "all" ||
+        (lodging === "available" && opportunity.lodgingAvailable) ||
+        (lodging === "notAvailable" && !opportunity.lodgingAvailable);
+      const matchesOrganization =
+        organization === "all" || opportunity.organization === organization;
+      const matchesLocation =
+        location === "all" || opportunity.location === location;
+
+      const opportunityStartDate = new Date(
+        opportunity.dateRange.split(" - ")[0]
+      );
+      const opportunityEndDate = new Date(
+        opportunity.dateRange.split(" - ")[1]
+      );
+      const matchesStartDate =
+        startDate === "" || opportunityStartDate >= new Date(startDate);
+      const matchesEndDate =
+        endDate === "" || opportunityEndDate <= new Date(endDate);
+
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesPositionType &&
+        matchesLodging &&
+        matchesOrganization &&
+        matchesLocation &&
+        matchesStartDate &&
+        matchesEndDate
+      );
+    });
+
+    setFilteredOpportunities(filtered);
+    setCurrentPage(1);
+  }, [
+    searchTerm,
+    category,
+    positionType,
+    lodging,
+    organization,
+    location,
+    startDate,
+    endDate,
+  ]);
+
+  const totalPages = Math.ceil(filteredOpportunities.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentOpportunities = opportunities.slice(indexOfFirstItem, indexOfLastItem);
+  const currentOpportunities = filteredOpportunities.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   const paginate = (pageNumber: number): void => setCurrentPage(pageNumber);
+
+  const resetFilters = () => {
+    setSearchTerm("");
+    setCategory("all");
+    setPositionType("all");
+    setLodging("all");
+    setOrganization("all");
+    setLocation("all");
+    setStartDate("");
+    setEndDate("");
+  };
 
   const renderPagination = () => (
     <div className="flex justify-center items-center mt-6 space-x-2">
@@ -585,41 +669,10 @@ const DiscoverOpportunities = () => {
     </div>
   );
 
-  const renderModal = (
-    title: string,
-    options: string[],
-    value: string,
-    setValue: React.Dispatch<React.SetStateAction<string>>
-  ) => (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="w-full justify-between">
-          {value || title}
-          <span className="text-blue-600">⋯</span>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            Select a {title.toLowerCase()} from the list below.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          {options.map((option, index) => (
-            <Button
-              key={index}
-              variant="outline"
-              onClick={() => setValue(option)}
-              className={value === option ? "bg-blue-100" : ""}
-            >
-              {option}
-            </Button>
-          ))}
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
+  const uniqueOrganizations = [
+    ...new Set(opportunities.map((o) => o.organization)),
+  ];
+  const uniqueLocations = [...new Set(opportunities.map((o) => o.location))];
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -641,7 +694,11 @@ const DiscoverOpportunities = () => {
         <div className="flex flex-col md:flex-row gap-8">
           <div className="w-full md:w-1/3">
             <h2 className="text-2xl font-bold mb-4">Narrow Choices</h2>
-            <Button variant="default" className="w-full mb-4">
+            <Button
+              variant="default"
+              className="w-full mb-4"
+              onClick={resetFilters}
+            >
               Reset Filters
             </Button>
             <div className="space-y-4">
@@ -652,42 +709,34 @@ const DiscoverOpportunities = () => {
                 >
                   Keyword
                 </label>
-                <Input type="text" id="keyword" placeholder="Search..." />
+                <Input
+                  type="text"
+                  id="keyword"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
               <Separator className="my-4" />
               <div>
                 <label
-                  htmlFor="inPersonVirtual"
+                  htmlFor="positionType"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  In-Person or Virtual
+                  Position Type
                 </label>
-                <Select>
+                <Select value={positionType} onValueChange={setPositionType}>
                   <SelectTrigger>
-                    <SelectValue placeholder="-- None --" />
+                    <SelectValue placeholder="All Types" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">-- None --</SelectItem>
-                    <SelectItem value="inPerson">In-Person</SelectItem>
-                    <SelectItem value="virtual">Virtual</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label
-                  htmlFor="positionEvent"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Position or Event
-                </label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="-- None --" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">-- None --</SelectItem>
-                    <SelectItem value="position">Position</SelectItem>
-                    <SelectItem value="event">Event</SelectItem>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="On-Site Position">
+                      On-Site Position
+                    </SelectItem>
+                    <SelectItem value="Virtual Position">
+                      Virtual Position
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -698,12 +747,12 @@ const DiscoverOpportunities = () => {
                 >
                   Lodging Availability
                 </label>
-                <Select>
+                <Select value={lodging} onValueChange={setLodging}>
                   <SelectTrigger>
-                    <SelectValue placeholder="-- None --" />
+                    <SelectValue placeholder="All Options" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">-- None --</SelectItem>
+                    <SelectItem value="all">All Options</SelectItem>
                     <SelectItem value="available">Available</SelectItem>
                     <SelectItem value="notAvailable">Not Available</SelectItem>
                   </SelectContent>
@@ -711,171 +760,194 @@ const DiscoverOpportunities = () => {
               </div>
               <div>
                 <label
-                  htmlFor="city"
+                  htmlFor="organization"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  City
+                  Organization
                 </label>
-                <Input type="text" id="city" placeholder="Enter city" />
+                <Select value={organization} onValueChange={setOrganization}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Organizations" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Organizations</SelectItem>
+                    {uniqueOrganizations.map((org) => (
+                      <SelectItem key={org} value={org}>
+                        {org}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label
-                  htmlFor="province"
+                  htmlFor="location"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Province
+                  Location
                 </label>
-                <Select>
+                <Select value={location} onValueChange={setLocation}>
                   <SelectTrigger>
-                    <SelectValue placeholder="-- Select Province --" />
+                    <SelectValue placeholder="All Locations" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">-- Select Province --</SelectItem>
-                    <SelectItem value="ncr">Metro Manila</SelectItem>
-                    <SelectItem value="ilocos">Ilocos Region</SelectItem>
-                    <SelectItem value="cagayanValley">
-                      Cagayan Valley
-                    </SelectItem>
-                    <SelectItem value="centralLuzon">Central Luzon</SelectItem>
-                    <SelectItem value="southernTagalog">CALABARZON</SelectItem>
-                    <SelectItem value="bicol">Bicol Region</SelectItem>
-                    <SelectItem value="visayas">Visayas</SelectItem>
-                    <SelectItem value="mindanao">Mindanao</SelectItem>
-                    {/* Add more provinces here */}
+                    <SelectItem value="all">All Locations</SelectItem>
+                    {uniqueLocations.map((loc) => (
+                      <SelectItem key={loc} value={loc}>
+                        {loc}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <Separator className="my-4" />
-
               <div>
                 <label
                   htmlFor="startDate"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Starts By
+                  Starts After
                 </label>
-                <Input type="date" id="startDate" />
+                <Input
+                  type="date"
+                  id="startDate"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
               </div>
               <div>
                 <label
                   htmlFor="endDate"
                   className="block text-sm font-medium text-gray-700 mb-1"
                 >
-                  Ends By
+                  Ends Before
                 </label>
-                <Input type="date" id="endDate" />
+                <Input
+                  type="date"
+                  id="endDate"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
               </div>
               <Separator className="my-4" />
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Category
                 </label>
-                {renderModal(
-                  "Category",
-                  ["Environment", "Education", "Health", "Community"],
-                  category,
-                  setCategory
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Special Group
-                </label>
-                {renderModal(
-                  "Special Group",
-                  ["Veterans", "Youth", "Seniors", "Families"],
-                  specialGroup,
-                  setSpecialGroup
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Agency
-                </label>
-                {renderModal(
-                  "Agency",
-                  [
-                    "Philippine Red Cross",
-                    "Gawad Kalinga",
-                    "Mangrove Planting and Coastal Conservation",
-                    "ASPIRE Philippines",
-                    "Caritas Philippines",
-                  ],
-                  agency,
-                  setAgency
-                )}
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Categories" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="Disaster Relief">
+                      Disaster Relief
+                    </SelectItem>
+                    <SelectItem value="Emergency Response">
+                      Emergency Response
+                    </SelectItem>
+                    <SelectItem value="Community Development">
+                      Community Development
+                    </SelectItem>
+                    <SelectItem value="Construction">Construction</SelectItem>
+                    <SelectItem value="Education">Education</SelectItem>
+                    <SelectItem value="Environmental Conservation">
+                      Environmental Conservation
+                    </SelectItem>
+                    <SelectItem value="Coastal Management">
+                      Coastal Management
+                    </SelectItem>
+                    <SelectItem value="Youth Development">
+                      Youth Development
+                    </SelectItem>
+                    <SelectItem value="Project Management">
+                      Project Management
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
-
-          <div className="w-full md:w-2/3">
-          <h2 className="text-2xl font-bold mb-4">
-              {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, opportunities.length)} of {opportunities.length} Opportunities
+          
+          <motion.div
+            className="w-full md:w-2/3"
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
+            <h2 className="text-2xl font-bold mb-4">
+              {indexOfFirstItem + 1}-
+              {Math.min(indexOfLastItem, opportunities.length)} of{" "}
+              {opportunities.length} Opportunities
             </h2>
-            <div className="space-y-6">
+            <AnimatePresence>
               {currentOpportunities.map((opportunity, index) => (
-                <Card key={index}>
-                  <CardContent className="p-6">
-                    <div className="flex flex-col md:flex-row gap-6">
-                      <div className="w-full md:w-1/3">
-                        <img
-                          src={opportunity.image}
-                          alt={opportunity.title}
-                          className="w-full h-48 object-cover rounded-md"
-                        />
-                      </div>
-                      <div className="w-full md:w-2/3">
-                        <h3 className="text-xl font-semibold text-blue-600 mb-2">
-                          {opportunity.title}
-                        </h3>
-                        <p className="text-gray-600 mb-2">
-                          {opportunity.organization}
-                        </p>
-                        <div className="space-y-2">
-                          <div className="flex items-center text-sm text-gray-600">
-                            <MapPin className="w-4 h-4 mr-2" />
-                            <span>{opportunity.location}</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Briefcase className="w-4 h-4 mr-2" />
-                            <span>{opportunity.position}</span>
-                          </div>
-                          <div className="flex items-center text-sm text-gray-600">
-                            <Calendar className="w-4 h-4 mr-2" />
-                            <span>{opportunity.dateRange}</span>
-                          </div>
-                        </div>
-                        <div className="mt-4">
-                          <ProgressBar
-                            current={opportunity.currentVolunteers}
-                            total={opportunity.totalVolunteersNeeded}
+                <motion.div
+                  key={opportunity.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
+                  <Card className="mb-6 hover:shadow-lg transition-shadow duration-300">
+                    <CardContent className="p-6">
+                      <div className="flex flex-col md:flex-row gap-6">
+                        <div className="w-full md:w-1/3">
+                          <img
+                            src={opportunity.image}
+                            alt={opportunity.title}
+                            className="w-full h-48 object-cover rounded-md hover:opacity-90 transition-opacity duration-300"
                           />
                         </div>
+                        <div className="w-full md:w-2/3">
+                          <h3 className="text-xl font-semibold text-blue-600 mb-2 hover:text-blue-800 transition-colors duration-300">
+                            {opportunity.title}
+                          </h3>
+                          <p className="text-gray-600 mb-2">
+                            {opportunity.organization}
+                          </p>
+                          <div className="space-y-2">
+                            <div className="flex items-center text-sm text-gray-600">
+                              <MapPin className="w-4 h-4 mr-2" />
+                              <span>{opportunity.location}</span>
+                            </div>
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Briefcase className="w-4 h-4 mr-2" />
+                              <span>{opportunity.position}</span>
+                            </div>
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              <span>{opportunity.dateRange}</span>
+                            </div>
+                          </div>
+                          <div className="mt-4">
+                            <ProgressBar
+                              current={opportunity.currentVolunteers}
+                              total={opportunity.totalVolunteersNeeded}
+                            />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="bg-gray-50 border-t p-4">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full"
-                          onClick={() => navigate("/event")}
-                        >
-                          More info
-                        </Button>
-                      </DialogTrigger>
-                      {/* <DialogContent className="max-w-4xl">
-                        <OpportunityDetails opportunity={opportunity} />
-                      </DialogContent> */}
-                    </Dialog>
-                  </CardFooter>
-                </Card>
+                    </CardContent>
+                    <CardFooter className="bg-gray-50 border-t p-4">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full hover:bg-blue-50 transition-colors duration-300"
+                            onClick={() => navigate("/event")}
+                          >
+                            More info
+                          </Button>
+                        </DialogTrigger>
+                      </Dialog>
+                    </CardFooter>
+                  </Card>
+                </motion.div>
               ))}
-            </div>
+            </AnimatePresence>
             {renderPagination()}
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

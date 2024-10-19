@@ -1,7 +1,7 @@
-"use client";
-
-import { MapPin, Briefcase, Calendar, Users } from "lucide-react";
+import React from 'react';
+import { MapPin, Briefcase, Calendar, Users, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 interface ProgressBarProps {
   current: number;
@@ -14,18 +14,24 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ current, total }) => {
   return (
     <div className="w-full mb-4">
       <div className="bg-gray-200 rounded-full h-2.5">
-        <div
+        <motion.div
           className="bg-blue-600 h-2.5 rounded-full"
-          style={{ width: `${percentage}%` }}
-        ></div>
+          initial={{ width: 0 }}
+          animate={{ width: `${percentage}%` }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        ></motion.div>
       </div>
-      <span className="block text-center mt-2 text-sm font-medium text-gray-700">
+      <motion.span
+        className="block text-center mt-2 text-sm font-medium text-gray-700"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
         {Math.round(percentage)}%
-      </span>
+      </motion.span>
     </div>
   );
 };
-
 
 export function LatestOpportunitiesComponent() {
   const opportunities = [
@@ -97,45 +103,53 @@ export function LatestOpportunitiesComponent() {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h2 className="text-4xl font-bold mb-8 pb-2 border-b-2 border-gray-200 w-full">
+    <div className="container mx-auto px-4 py-12">
+      <motion.h2
+        className="text-4xl font-bold mb-8 pb-2 border-b-2 border-blue-500 w-full text-center text-blue-700"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         Latest Opportunities
-      </h2>
+      </motion.h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
         {opportunities.map((opportunity, index) => (
-          <div
+          <motion.div
             key={index}
-            className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200"
+            className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
           >
-            <div className="h-48 overflow-hidden">
+            <div className="relative h-48 overflow-hidden group">
               <img
                 src={opportunity.image}
                 alt={opportunity.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               />
+              <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <p className="text-white text-lg font-semibold">{opportunity.organization}</p>
+              </div>
             </div>
             <div className="p-6">
-              <p className="text-sm text-gray-600 mb-2">
-                {opportunity.organization}
-              </p>
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">
+              <h3 className="text-xl font-semibold text-blue-700 mb-4 hover:text-blue-500 transition-colors duration-300">
                 {opportunity.title}
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex items-center text-sm text-gray-600">
-                  <MapPin className="w-4 h-4 mr-2" />
+                  <MapPin className="w-4 h-4 mr-2 text-blue-500" />
                   <span>{opportunity.location}</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
-                  <Briefcase className="w-4 h-4 mr-2" />
+                  <Briefcase className="w-4 h-4 mr-2 text-blue-500" />
                   <span>{opportunity.position}</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
-                  <Calendar className="w-4 h-4 mr-2" />
+                  <Calendar className="w-4 h-4 mr-2 text-blue-500" />
                   <span>{opportunity.dateRange}</span>
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
-                  <Users className="w-4 h-4 mr-2" />
+                  <Users className="w-4 h-4 mr-2 text-blue-500" />
                   <span>
                     {opportunity.currentVolunteers} / {opportunity.totalVolunteersNeeded} volunteers
                   </span>
@@ -149,22 +163,31 @@ export function LatestOpportunitiesComponent() {
               </div>
             </div>
             <div className="px-6 pb-6">
-              <Button variant="outline" className="w-full">
-                More info
+              <Button
+                variant="outline"
+                className="w-full group hover:bg-blue-600 hover:text-white transition-all duration-300"
+              >
+                <span className="mr-2">More info</span>
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Button>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-      <div className="flex justify-center">
+      <motion.div
+        className="flex justify-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+      >
         <Button
           variant="default"
           size="lg"
-          className="px-8 py-3 text-lg font-semibold"
+          className="px-8 py-3 text-lg font-semibold bg-blue-600 hover:bg-blue-700 transition-colors duration-300"
         >
           See all opportunities
         </Button>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -44,7 +44,7 @@ export default function Dashboard({ children }: DashboardProps) {
         { name: "Event Dashboard", route: "/manage-org-home" },
         { name: "View All Applications", route: "/view-applications"  },
         { name: "Connections & Page View Report", route:"/event-statistics" },
-        { name: "Chat With Volunteers", route:"/organization-chat" },
+        // { name: "Chat With Volunteers", route:"/organization-chat" },
       ],
     },
     {

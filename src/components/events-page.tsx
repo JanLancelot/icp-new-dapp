@@ -85,18 +85,42 @@ const initialEvents: Event[] = [
 export default function EventsPageComponent() {
   const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>(initialEvents);
+  const [animatingEventId, setAnimatingEventId] = useState<number | null>(null);
 
   const completeEvent = (id: number) => {
-    setEvents(events.map(event => 
-      event.id === id ? { ...event, completed: true } : event
-    ));
+    setAnimatingEventId(id);
+    setTimeout(() => {
+      setEvents(events.map(event => 
+        event.id === id ? { ...event, completed: true } : event
+      ));
+      setAnimatingEventId(null);
+    }, 500); // Wait for animation to complete before updating state
+  };
+
+  const togglePositionFilled = (eventId: number, positionIndex: number) => {
+    setEvents(events.map(event => {
+      if (event.id === eventId) {
+        const updatedPositions = [...event.positions];
+        updatedPositions[positionIndex] = {
+          ...updatedPositions[positionIndex],
+          filled: !updatedPositions[positionIndex].filled
+        };
+        return { ...event, positions: updatedPositions };
+      }
+      return event;
+    }));
   };
 
   const activeEvents = events.filter(event => !event.completed);
   const completedEvents = events.filter(event => event.completed);
 
   const renderEvent = (event: Event) => (
-    <Card key={event.id} className="flex flex-col">
+    <Card 
+      key={event.id} 
+      className={`flex flex-col transition-all duration-500 ${
+        animatingEventId === event.id ? 'opacity-0 transform translate-y-[-20px]' : 'opacity-100'
+      }`}
+    >
       <img 
         src={event.image} 
         alt={event.title}
@@ -126,7 +150,12 @@ export default function EventsPageComponent() {
           <h4 className="font-semibold mb-2">Positions Needed:</h4>
           <div className="flex flex-wrap gap-2">
             {event.positions.map((position, index) => (
-              <Badge key={index} variant={position.filled ? "secondary" : "outline"} className="flex items-center">
+              <Badge 
+                key={index} 
+                variant={position.filled ? "secondary" : "outline"} 
+                className="flex items-center cursor-pointer"
+                onClick={() => togglePositionFilled(event.id, index)}
+              >
                 {position.title}
                 {position.filled ? 
                   <CheckCircle className="ml-1 h-3 w-3 text-green-500" /> : 

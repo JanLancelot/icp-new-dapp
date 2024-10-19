@@ -1,4 +1,5 @@
-import { EventPageComponent } from "@/components/event-page";
+
+import EventPageComponent from "@/components/event-page";
 import { FooterComponent } from "@/components/footer";
 import { NavbarComponent } from "@/components/navbar";
 
