@@ -61,36 +61,43 @@ export function AuthPageComponent(): JSX.Element {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, formType: string) => {
-    e.preventDefault();
-    setIsLoading(true);
+  e.preventDefault();
+  setIsLoading(true);
 
-    const endpoint = formType === "signin" ? "/api/auth/login" : "/api/auth/register";
-    const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-    });
+  const endpoint = formType === "signin" ? "/api/auth/login" : "/api/auth/register";
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
 
-    setIsLoading(false);
+  setIsLoading(false);
 
-    if (response.ok) {
-        const data = await response.json();
-        console.log(`${formType} successful:`, data);
-        
-        alert(`${formType.charAt(0).toUpperCase() + formType.slice(1)} successful!`);
-      
-    } else {
-        const error = await response.json();
-        console.error(`${formType} failed:`, error);
-        
-        alert(`Error: ${error.message || 'Something went wrong!'}`);
+  if (response.ok) {
+    const data = await response.json();
+    console.log(`${formType} successful:`, data);
+    
+    alert(`${formType.charAt(0).toUpperCase() + formType.slice(1)} successful!`);
+    
+    // Redirect to a specific page after successful login
+    if (formType === "signin") {
+      window.location.href = "/dashboard"; // Change "/dashboard" to your target page
+    } else if (formType === "register") {
+      alert("Registration successful! You can now log in.");
     }
+  } else {
+    const error = await response.json();
+    console.error(`${formType} failed:`, error);
+    
+    alert(`Error: ${error.message || 'Something went wrong!'}`);
+  }
 
-    // Reset form data after submit
-    setFormData({ email: "", password: "", name: "" });
+  // Reset form data after submit
+  setFormData({ email: "", password: "", name: "" });
 };
+
 
   return (
     <div className="flex h-screen">
