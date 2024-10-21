@@ -60,20 +60,37 @@ export function AuthPageComponent(): JSX.Element {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>,
-    formType: string
-  ) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, formType: string) => {
     e.preventDefault();
     setIsLoading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const endpoint = formType === "signin" ? "/api/auth/login" : "/api/auth/register";
+    const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+    });
 
-    console.log(`${formType} form submitted:`, formData);
     setIsLoading(false);
 
+    if (response.ok) {
+        const data = await response.json();
+        console.log(`${formType} successful:`, data);
+        
+        alert(`${formType.charAt(0).toUpperCase() + formType.slice(1)} successful!`);
+      
+    } else {
+        const error = await response.json();
+        console.error(`${formType} failed:`, error);
+        
+        alert(`Error: ${error.message || 'Something went wrong!'}`);
+    }
+
+    // Reset form data after submit
     setFormData({ email: "", password: "", name: "" });
-  };
+};
 
   return (
     <div className="flex h-screen">
